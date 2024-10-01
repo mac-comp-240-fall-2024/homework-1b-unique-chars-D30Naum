@@ -76,7 +76,54 @@ bool hasUniqueChars(char * inputStr) {
   // and checkBitsexcl_amp, for debugging purposes. 
   // It also illustrates how to use the seeBits function for debugging.
   // Printed values should initially be all zeros
-  // TODO: remove or comment out this code when satisfied of function correctness
+  
+  for (int i = 0, length = strlen(inputStr); i < length; i++) {
+    nextChar = inputStr[i];
+
+    // Skip spaces as they do not need to be checked for uniqueness
+    if (nextChar == ' ') {
+        continue;
+    }
+
+    // Check if the character is an uppercase letter (A-Z)
+    if (nextChar >= 'A' && nextChar <= 'Z') {
+        unsigned long index = nextChar - 'A';  // Calculate the position in the bitmask
+        unsigned long mask = 1L << index;  // Create a bitmask for the character
+
+        // If the bit is already set, the character is a duplicate
+        if (checkBitsA_z & mask) {
+            return false;
+        }
+        // Otherwise, mark the character as seen by setting the corresponding bit
+        checkBitsA_z |= mask;
+    }
+    // Check if the character is a lowercase letter (a-z)
+    else if (nextChar >= 'a' && nextChar <= 'z') {
+        unsigned long index = nextChar - 'a' + 26;  // Calculate the index for lowercase letters (offset by 26)
+        unsigned long mask = 1L << index;  // Create a bitmask for the character
+
+        // If the bit is already set, this character has appeared before
+        if (checkBitsA_z & mask) {
+            return false;
+        }
+        // Mark the character as seen in the bitmask
+        checkBitsA_z |= mask;
+    }
+    // Check for special characters in the range '!' to '@'
+    else if (nextChar >= '!' && nextChar <= '@') {
+        unsigned long index = nextChar - '!';  // Calculate the index for special characters
+        unsigned long mask = 1L << index;  // Create a bitmask for the special character
+
+        // If the bit is set, the special character is a duplicate
+        if (checkBitsexcl_amp & mask) {
+            return false;
+        }
+        // Mark the special character as seen
+        checkBitsexcl_amp |= mask;
+    }
+}
+return true;
+
   
   char debug_str_A_z[128];
   strcpy(debug_str_A_z, "checkBitsA_z before: \n");
@@ -88,6 +135,20 @@ bool hasUniqueChars(char * inputStr) {
   // -------------------------------------------------------------
 
   // TODO: Declare additional variables you need here
+
+  // Display the integer value of the current character
+printf("Current character as integer: %d\n", nextChar);
+
+// Prepare a single-character string representation of nextChar
+char char_str[2] = {nextChar, '\0'};
+
+// Build the debug message incrementally
+strcpy(debug_str_A_z, "Processing character: ");
+strcat(debug_str_A_z, char_str);
+strcat(debug_str_A_z, " | checkBitsA_z: \n");
+
+// Output the current state of checkBitsA_z
+seeBits(checkBitsA_z, debug_str_A_z);
 
   
   for(i = 0; i < strlen(inputStr); i++) {
